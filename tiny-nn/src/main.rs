@@ -1,6 +1,7 @@
 struct NeuralNetwork {
     weights: Vec<f64>
     bias f64
+    learningRate: f64
 }
 
 // output = activation(weights* inputs + bias)
@@ -13,7 +14,8 @@ impl NeuralNetwork {
 
         Self {
             weights,
-            bias: rng.gen_range(0.0..1.0)
+            bias: rng.gen_range(0.0..1.0),
+            learningRate: 0.1
         }
     }
 
@@ -26,9 +28,34 @@ impl NeuralNetwork {
 
         sigmoid(sum)
     }
+
+
+    fn train(&mut Self, inputs:Vec<[f64; 2]>, outputs: Vec<f64>, epochs: usize) {
+        for _ in 0..epochs {
+            for (i, input) in inputs.iter().enumerate() {
+                let output = self.predict(input);
+
+                let error = outputs[i] - output
+
+                // finding gradient of sigmoid function
+                let delta = derivative(output)
+
+                for j in 0..self.weights.len() {
+                    self.weights[j] += self.learningRate * error * input[j] * delta
+                }
+
+                bias = learningRate * error * delta
+            }
+        }
+    }
 }
 
 
 fn sigmoid(x: f64) -> f64 {
     1.0 / (1.0 + (-x).exp())
+}
+
+
+fn derivative(x: f64) -> f64 {
+    x * (1.0 - x)
 }
